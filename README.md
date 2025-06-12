@@ -6,7 +6,7 @@
 
 *Your First Choice for API Smoke Testing*
 
-[![.NET](https://img.shields.io/badge/.NET-6.0-blue)](https://dotnet.microsoft.com/download)
+[![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/download)
 
 </div>
 
