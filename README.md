@@ -75,9 +75,9 @@ FirstSmoke is a .NET-based smoke testing tool that allows you to:
 
 The `apis.yaml` file consists of three main sections:
 
-1. **Variables**: Global variables that can be used across all API calls
-2. **TokenGenerators**: Authentication token generation configurations
-3. **APIs**: The actual API endpoints to test
+1. **Variables**: Global variables for reuse across API calls
+2. **TokenGenerators**: Authentication configurations
+3. **APIs**: FHIR API endpoints to test
 
 ### 1. Variables Section
 ```yaml
@@ -87,14 +87,15 @@ Variables:
   NPI: "2284932251"
 ```
 - Define reusable variables here
-- Use `{{VariableName}}` syntax in other sections to reference these variables
+- Use `{{VariableName}}` syntax in other sections
+- Common variables include MRN, AccessionNumber, and NPI
 
 ### 2. TokenGenerators Section
 ```yaml
 TokenGenerators:
-- Name: "BaylorToken"
+- Name: "AuthToken"
   Type: "POST"
-  Endpoint: "https://api.example.com/token"
+  Endpoint: "https://api.example.com/auth/token"
   Payload: >
     {
       "clientId": "your-client-id",
@@ -114,73 +115,103 @@ TokenGenerators:
 APIs:
 - Name: "CreateOrder"
   Type: "POST"
-  Endpoint: "https://api.example.com/endpoint"
+  Endpoint: "https://api.example.com/fhir/Orders"
   IsTokenNeeded: true
-  TokenGenerationAPIName: "BaylorToken"
-  ContentType: "application/json"
+  TokenGenerationAPIName: "AuthToken"
+  ContentType: "application/fhir+json"
   Payload: >
     {
-      "key": "value",
-      "variable": "{{MRN}}"
+      "resourceType": "Bundle",
+      "type": "collection",
+      "entry": [
+        {
+          "resource": {
+            "resourceType": "Practitioner",
+            "id": "Pra1",
+            "identifier": [
+              {
+                "type": {
+                  "text": "NPI"
+                },
+                "value": "{{NPI}}"
+              }
+            ]
+          }
+        }
+      ]
     }
-  Headers:
-    Authorization: "Bearer {{token}}"
-  ExpectedStatus: 200
-  Validations:
-    - Type: "json"
-      Path: "$.status"
-      Expected: "success"
 ```
+
+#### API Configuration Fields
 - `Name`: Unique identifier for the API
 - `Type`: HTTP method (GET, POST, PUT, DELETE)
 - `Endpoint`: API endpoint URL
 - `IsTokenNeeded`: Whether authentication is required
 - `TokenGenerationAPIName`: Reference to a TokenGenerator
-- `ContentType`: Request content type
-- `Payload`: Request body (for POST/PUT)
-- `Headers`: Custom headers
-- `ExpectedStatus`: Expected HTTP status code
-- `Validations`: Response validation rules
+- `ContentType`: Request content type (e.g., "application/fhir+json")
+- `Payload`: FHIR Bundle or resource payload
 
-### Variable Substitution
-- Use `{{VariableName}}` to reference variables
-- Variables can be from:
-  - Global Variables section
-  - Previous API responses
-  - Token responses
+### FHIR Resource Structure
+The payload typically contains a FHIR Bundle with multiple resources:
 
-### Example API Configuration
+1. **Practitioner Resources**:
+   - Primary and secondary practitioners
+   - NPI identifiers
+   - Contact information
+
+2. **Organization Resources**:
+   - Healthcare organizations
+   - Organization identifiers
+
+3. **PractitionerRole Resources**:
+   - Links practitioners to organizations
+   - Role assignments
+
+4. **Coverage Resources**:
+   - Insurance information
+   - Policy details
+   - Payment methods
+
+5. **Patient Resources**:
+   - Patient demographics
+   - Identifiers (MRN, etc.)
+   - Contact information
+
+6. **Specimen Resources**:
+   - Collection details
+   - Specimen types
+
+7. **ProcedureRequest Resources**:
+   - Test orders
+   - Accession numbers
+   - Test codes
+
+### Variable Usage Examples
 ```yaml
-APIs:
-- Name: "GetPatientInfo"
-  Type: "GET"
-  Endpoint: "https://api.example.com/patients/{{MRN}}"
-  IsTokenNeeded: true
-  TokenGenerationAPIName: "BaylorToken"
-  Headers:
-    Authorization: "Bearer {{token}}"
-  ExpectedStatus: 200
-  Validations:
-    - Type: "json"
-      Path: "$.patient.id"
-      Expected: "{{MRN}}"
+# In API payloads
+"value": "{{MRN}}"
+"value": "{{AccessionNumber}}"
+"value": "{{NPI}}"
+
+# In endpoints
+Endpoint: "https://api.example.com/fhir/orders/{{OrderId}}/update"
 ```
 
 ### Best Practices
-1. **Organization**:
-   - Group related APIs together
-   - Use descriptive names
-   - Document complex payloads
+1. **FHIR Bundle Organization**:
+   - Group related resources together
+   - Maintain proper resource references
+   - Use consistent resource IDs
 
-2. **Variables**:
+2. **Variable Management**:
    - Use meaningful variable names
    - Keep sensitive data in variables
    - Document variable purposes
 
-3. **Validation**:
-   - Validate both success and error cases
-   - Use JSON path for precise validation
-   - Include multiple validation rules when needed
+3. **Resource References**:
+   - Ensure proper resource linking
+   - Use consistent reference formats
+   - Validate reference integrity
 
 4. **Security**:
    - Never hardcode sensitive data
@@ -327,7 +358,7 @@ We welcome contributions to FirstSmoke! Here's how you can help:
 3. 🔧 Submit pull requests
 4. 📝 Improve documentation
 5. 🎯 Add test cases
-6. �� Review code
+6. 🔄 Review code
 
 ---
 
