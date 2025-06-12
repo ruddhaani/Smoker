@@ -236,23 +236,8 @@ Endpoint: "https://api.example.com/fhir/orders/{{OrderId}}/update"
    # Run FirstSmoke.exe
    FirstSmoke.exe
    ```
-
-2. **📋 Configuration Structure**:
-   ```yaml
-   apis:
-     - name: "Test API"
-       method: "GET"
-       url: "https://api.example.com/endpoint"
-       headers:
-         Authorization: "Bearer ${token}"
-       expectedStatus: 200
-       validations:
-         - type: "json"
-           path: "$.status"
-           expected: "success"
-   ```
-
-3. **🔑 Key Features**:
+   
+2. **🔑 Key Features**:
    - Multiple API endpoint testing
    - Status code validation
    - Response body validation
@@ -260,7 +245,7 @@ Endpoint: "https://api.example.com/fhir/orders/{{OrderId}}/update"
    - Token management
    - File upload handling
 
-4. **📁 Required Directory Structure**:
+3. **📁 Required Directory Structure**:
    ```
    FirstSmoke/
    ├── FirstSmoke.exe
