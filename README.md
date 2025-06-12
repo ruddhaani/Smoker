@@ -340,9 +340,6 @@ We welcome contributions to FirstSmoke! Here's how you can help:
 
 1. 🐛 Report bugs and issues
 2. 💡 Suggest new features
-3. 🔧 Submit pull requests
-4. 📝 Improve documentation
-5. 🎯 Add test cases
 6. 🔄 Review code
 
 ---
