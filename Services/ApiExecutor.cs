@@ -42,9 +42,12 @@ namespace Smoker.Services
                 }
 
                 // Determine content type
-                var contentType = string.IsNullOrWhiteSpace(def.ContentType)
-                    ? "application/json"
-                    : def.ContentType;
+                var isFileUpload = def.Type.Equals("FILEUPLOAD", StringComparison.OrdinalIgnoreCase);
+
+                // Only apply Content-Type if not multipart
+                var contentType = (!isFileUpload && !string.IsNullOrWhiteSpace(def.ContentType))
+                    ? def.ContentType
+                    : null;
 
                 // Execute the strategy (may include decorator for response parsing)
                 var strategy = StrategyFactory.GetStrategy(def.Type);
