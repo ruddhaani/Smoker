@@ -7,9 +7,9 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        Console.WriteLine("Smoke Tests have started. Grab your cup of coffee, sit back, and relax.");
         string basePath = AppContext.BaseDirectory;
-        //string configPath = Path.Combine(basePath, "Configs", "apis.yaml");
-        string configPath = Path.Combine("C:\\POC\\Smoker\\Smoker\\Configs\\apis.yaml");
+        string configPath = Path.Combine(basePath, "Configs", "apis.yaml");
 
 
         var yaml = File.ReadAllText(configPath);
@@ -20,7 +20,7 @@ class Program
         var config = deserializer.Deserialize<AppConfig>(yaml);
 
         var logger = LoggerFactory.CreateLogger();
-        var varSvc = new VariableService("C:\\POC\\Smoker\\Smoker\\Configs\\apis.yaml");
+        var varSvc = new VariableService(Path.Combine(basePath, "Configs", "apis.yaml"));
         var tokenSvc = new TokenService();
         var executor = new ApiExecutor(tokenSvc, config.TokenGenerators, logger , varSvc);
 
