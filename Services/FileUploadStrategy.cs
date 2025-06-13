@@ -13,19 +13,12 @@ namespace Smoker.Strategies
     {
         public async Task<HttpResponseMessage> Execute(HttpClient client, string url, string body, string contentType)
         {
-            Console.WriteLine("[FileUploadStrategy] Entering Execute()");
 
             FileUploadPayload payload;
-            try
-            {
-                payload = JsonSerializer.Deserialize<FileUploadPayload>(body);
-                Console.WriteLine("[FileUploadStrategy] Deserialized payload successfully");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[FileUploadStrategy] Payload deserialization failed: {ex.Message}");
-                throw;
-            }
+
+            payload = JsonSerializer.Deserialize<FileUploadPayload>(body);
+
+
 
             if (!File.Exists(payload.FilePath))
             {
@@ -49,7 +42,6 @@ namespace Smoker.Strategies
             fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
 
             content.Add(fileContent, fileFieldName, fileName);
-            Console.WriteLine($"[FileUploadStrategy] File part added: field={fileFieldName}, name={fileName}");
 
             if (!string.IsNullOrEmpty(payload.Description))
                 content.Add(new StringContent(payload.Description), "Description");
@@ -60,24 +52,14 @@ namespace Smoker.Strategies
             if (!string.IsNullOrEmpty(payload.FileName))
                 content.Add(new StringContent(payload.FileName), "FileName");
 
-            Console.WriteLine("[FileUploadStrategy] Metadata fields added");
-
             HttpResponseMessage response;
             try
             {
-                Console.WriteLine("[FileUploadStrategy] Sending POST...");
                 response = await client.PostAsync(url, content);
-                Console.WriteLine($"[FileUploadStrategy] Response received: {response.StatusCode}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[FileUploadStrategy] HTTP POST failed: {ex.Message}");
-                throw;
             }
             finally
             {
                 fileStream.Dispose();
-                Console.WriteLine("[FileUploadStrategy] File stream disposed");
             }
 
             return response;

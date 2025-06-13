@@ -12,9 +12,6 @@ namespace Smoker.Services
         {
             var content = new StringContent(body, Encoding.UTF8, contentType);
 
-            Console.WriteLine(Environment.NewLine);
-            Console.WriteLine(content);
-            Console.WriteLine(body);
             return client.PutAsync(url, content);
         }
     }

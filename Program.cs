@@ -32,6 +32,7 @@ class Program
         logger.Close();
 
         Console.WriteLine("Smoke Test was completed. Have a nice and automated day. Don't forget to check those logs!");
+        Console.WriteLine("Press Any Key to EXIT........");
         Console.ReadKey();
     }
 }

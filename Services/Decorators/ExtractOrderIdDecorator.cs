@@ -18,29 +18,21 @@ namespace Smoker.Services.Decorators
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                try
-                {
-                    using var doc = JsonDocument.Parse(json);
-                    var root = doc.RootElement;
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
 
-                    if (root.TryGetProperty("id", out var idProp))
-                    {
-                        var orderId = idProp.GetString();
-                        if (!string.IsNullOrEmpty(orderId))
-                        {
-                            ValueStore.Set("OrderId", orderId);
-                            Console.WriteLine($"[DEBUG] OrderId saved: {orderId}");
-                        }
-                    }
-                }
-                catch (Exception ex)
+                if (root.TryGetProperty("id", out var idProp))
                 {
-                    Console.WriteLine($"[ERROR] Failed to extract OrderId: {ex.Message}");
+                    var orderId = idProp.GetString();
+                    if (!string.IsNullOrEmpty(orderId))
+                    {
+                        ValueStore.Set("OrderId", orderId);
+                    }
                 }
             }
 
             return response;
         }
     }
-   
+
 }

@@ -11,8 +11,6 @@ namespace Smoker.Services
         public Task<HttpResponseMessage> Execute(HttpClient client, string url, string body, string contentType)
         {
             var content = new StringContent(body, Encoding.UTF8, contentType);
-            Console.WriteLine(body);
-            Console.WriteLine(content);
             return client.PostAsync(url, content);
         }
     }
